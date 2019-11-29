@@ -8,6 +8,8 @@ from .iriweb import iriwebg
 from timeutil import TimeUtilities
 from numpy import arange, nan, ones, squeeze, where
 
+import pandas as pd
+
 class IRI2016(object):
 
     def __init__(self):
@@ -297,15 +299,27 @@ class IRI2016Profile(IRI2016):
             print('  Height\tNe    Ne/NmF2\tTi\tTe\tO+\tH+\tN+    He+    O2+    NO+   Clust.  Rz12   IG12   F107   F107(81)   ap    AP')
             print('------------------------------------------------------------------------------------------------------------------------------------------')
 
+            valss = []  # Save all values to an array.
             for i in range(self.numstp):
 
                 varval = self.vbeg + float(i) * self.vstp
                 edens = a[1 - 1, i] * 1e-6
                 edratio = a[1 - 1, i] / b[1 - 1, 1 - 1]
 
-                print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' %
-                    (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i],
-                    a[7,i], a[8,i], a[9,i], b[32,i], b[38,i], b[40,i], b[45,i], b[50,i], b[51,i]))
+#                print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' %
+#                    (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i],
+#                    a[7,i], a[8,i], a[9,i], b[32,i], b[38,i], b[40,i], b[45,i], b[50,i], b[51,i]))
+
+                vals = (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i], a[7,i], a[8,i], a[9,i], b[32,i], b[38,i], b[40,i], b[45,i], b[50,i], b[51,i])
+                print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' % vals)
+
+                valss.append(vals)
+
+            cols    = ['Height','Ne','Ne/NmF2','Ti','Te','O+','H+','N+','He+','O2+','NO+','Clust.','Rz12','IG12','F107','F107(81)','ap','AP']
+            df      = pd.DataFrame(valss,columns=cols).set_index('Height') # Covert list/array to pandas data frames.
+
+        self.heiProfile = df
+        return df
 
     #
     # End of 'HeiProfile'
